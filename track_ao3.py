@@ -32,24 +32,25 @@ def get_objects_from_file(file_name,constructor):
     ## Returns a list of objects made with constructor from file_name
     ## Requires: constructor takes one input
     ## Str Func -> (listof AO3.User)
-    with open(file_name) as a:
-        return list(map(constructor, a.readlines()))
+    try:
+        with open(file_name) as a:
+            return list(map(constructor, a.readlines()))
+    except:
+        print("There is no file called",file_name+"; returning blank list.")
+        return []
 
 
-def get_all_updated_works(author_file_name,work_file_name,last_checked):
+def get_all_updated_works(author_objects,work_objects,date_last_checked):
     ## Returns a list of all works by all authors in 
     ##   the files represented by author_file_name and work_file_name
     ## Str Str Datetime -> (listof AO3.Work)
-    author_objects = get_objects_from_file(author_file_name,AO3.User)
-    work_objects = get_objects_from_file(work_file_name,AO3.Work)
-
     work_objects_by_authors = get_all_works_from_multiple_authors(author_objects)
 
     all_work_objects = []
     all_work_objects.extend(work_objects)
     all_work_objects.extend(work_objects_by_authors)
 
-    updated_work_objects = list(filter(lambda work: has_update(work,last_checked), all_work_objects))
+    updated_work_objects = list(filter(lambda work: has_update(work,date_last_checked), all_work_objects))
 
     return updated_work_objects
 
@@ -89,8 +90,11 @@ if __name__ == "__main__":
     
     file_name_authors_global = "data/authors.txt"
     file_name_works_global = "data/works.txt"
+    
+    author_objects_global = get_objects_from_file(file_name_authors_global,AO3.User)
+    work_objects_global = get_objects_from_file(file_name_works_global,AO3.Work)
 
-    works_list = get_all_updated_works(file_name_authors_global,file_name_works_global,date)
+    works_list = get_all_updated_works(author_objects_global,work_objects_global,date)
 
     file_name_element = "resource/element.html"
     file_name_head = "resource/head.html"
