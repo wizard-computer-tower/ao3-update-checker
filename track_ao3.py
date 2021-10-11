@@ -2,8 +2,6 @@ import AO3
 import datetime as dt
 import webbrowser
 
-debug = False
-
 def has_update(work,last_checked):
     ## Returns True if work has updated since last_checked
     ## AO3.Work -> Bool
@@ -83,7 +81,7 @@ def make_html(works,element_template,head_template,output_file_name,since_date):
     with open(output_file_name,"w") as f:
         f.write(head+body)
 
-if __name__ == "__main__" and not debug:
+if __name__ == "__main__":
     date_format = "%Y-%m-%d"
     last_checked_file_name = "data/last_ran.txt"
     with open(last_checked_file_name) as f:
@@ -103,61 +101,3 @@ if __name__ == "__main__" and not debug:
         f.write(str(dt.datetime.now())[:10])
     
     webbrowser.open_new_tab(file_name_output)
-
-if __name__ == "__main__" and debug:
-    debug_all = False
-
-    print("=== DEBUG DATE ===")
-    debug_date = dt.datetime(2021,10,10)
-    print(debug_date)
-
-    if debug_all:
-
-        authors = "data/authors.txt"
-        works = "data/works.txt"
-
-        debug_work_new_incomplete = AO3.Work(34013635) # published 2021-09-21 updated 2021-10-10 incomplete work
-        debug_work_old_complete = AO3.Work(16483172) # published 2018-11-01 complete work
-
-        print("\n\n=== DEBUGGING has_update ===")
-        update_debug_true = has_update(debug_work_new_incomplete,debug_date) # published 2021-09-21 updated 2021-10-10
-        print("Work updated 2021-10-10 should give True:",update_debug_true)
-
-        update_debug_false = has_update(debug_work_old_complete,debug_date) # published 2018-11-01
-        print("Work updated 2018-11-01 should give False:",update_debug_false)
-
-        print("\n\n=== DEBUGGING is_incomplete ===")
-        complete_debug_true = is_incomplete(debug_work_new_incomplete)
-        print("Work in progress should give True:",complete_debug_true)
-
-        complete_debug_false = is_incomplete(debug_work_old_complete)
-        print("Complete work should give False:",complete_debug_false)
-
-        print("\n\n=== DEBUGGING get_objects_from_file ===")
-        work_debug = get_objects_from_file(works,AO3.Work)
-        print("List of AO3 work objects\n",work_debug)
-
-        author_debug = get_objects_from_file(authors,AO3.User)
-        print("List of AO3 user objects\n",author_debug)
-
-        print("\n\n=== DEBUGGING get_all_works_from_multiple_authors ===")
-        works_by_authors_debug = get_all_works_from_multiple_authors(author_debug)
-        print("List of AO3 work objects retreived from AO3 user objects\n",works_by_authors_debug)
-        print("Type of first element should be AO3.Work: ",type(works_by_authors_debug[0]))
-
-        print("\n\n=== DEBUGGING filtering updated works lambda ===")
-        debug_list = [debug_work_new_incomplete,debug_work_old_complete]
-        debug_filtered_list = list(filter(lambda work: has_update(work,debug_date), debug_list))
-        print("Work 34013635 is called Tributary at the time I'm writing this\n",debug_filtered_list)
-
-        print("\n\n=== DEBUGGING work.authors attribute ===")
-        debug_work_author_attr = AO3.Work(11482971)
-        print("Work 11482971 is by Dayanara at the time I'm writing this\n",str(debug_work_author_attr.authors))
-
-        print("\n\n=== DEBUGGING repr_work_as_li_element ===")
-        with open("resource/element.html") as t:
-            template = t.readline()
-        formatted_string = repr_work_as_li_element(debug_work_author_attr,template)
-        print("Author should be Daranaya:",formatted_string)
-
-        webbrowser.open_new_tab("updates.html")
