@@ -96,10 +96,7 @@ if __name__ == "__main__":
     author_objects_global = get_objects_from_file(file_name_authors_global,AO3.User)
     work_objects_global = get_objects_from_file(file_name_works_global,AO3.Work)
 
-    try:
-        remove_completed_works(file_name_works_global,work_objects_global)
-    except OSError:
-        pass
+    remove_completed_works(file_name_works_global,work_objects_global)
 
     works_list = get_all_updated_works(author_objects_global,work_objects_global,date)
 
