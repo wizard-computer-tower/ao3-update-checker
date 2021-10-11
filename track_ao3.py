@@ -13,6 +13,17 @@ def is_incomplete(work):
     ## AO3.Work -> Bool
     return work.status == "Work in Progress"
 
+def get_objects_from_file(file_name,constructor):
+    ## Returns a list of objects made with constructor from file_name
+    ## Requires: constructor takes one input
+    ## Str Func -> (listof AO3.User)
+    try:
+        with open(file_name) as a:
+            return list(map(constructor, a.readlines()))
+    except OSError:
+        # print("There is no file called",file_name+"; returning blank list.") # Debug only
+        return []
+
 def remove_completed_works(work_file_name,tracked_works):
     ## Re-writes work_file_name to be without any complete works in tracked_works
     ## Str (listof AO3.Work) -> None
@@ -27,18 +38,6 @@ def get_all_works_from_multiple_authors(listof_authors):
     for author in listof_authors:
         works_by_authors.extend(author.get_works())
     return works_by_authors
-
-def get_objects_from_file(file_name,constructor):
-    ## Returns a list of objects made with constructor from file_name
-    ## Requires: constructor takes one input
-    ## Str Func -> (listof AO3.User)
-    try:
-        with open(file_name) as a:
-            return list(map(constructor, a.readlines()))
-    except:
-        print("There is no file called",file_name+"; returning blank list.")
-        return []
-
 
 def get_all_updated_works(author_objects,work_objects,date_last_checked):
     ## Returns a list of all works by all authors in 
@@ -65,7 +64,9 @@ def repr_work_as_li_element(work,template):
     return template.format(url=url,title=title,authors=authors_str)
 
 def make_html(works,element_template,head_template,output_file_name,since_date):
-    ## Creates an HTML file with a list of works
+    ## Creates an HTML file named output_file_name listing each item in works as 
+    ##   an element in element_template. The file begins with head_template and lists
+    ##   since_date on the page
     ## (listof AO3.Work) Str Str -> None
     with open(head_template) as t:
         head = t.readline()
@@ -86,13 +87,19 @@ if __name__ == "__main__":
     date_format = "%Y-%m-%d"
     last_checked_file_name = "data/last_ran.txt"
     with open(last_checked_file_name) as f:
-        date = dt.datetime.strptime(f.readline(),date_format)
+        date_text = f.readline()[:10]
+        date = dt.datetime.strptime(date_text,date_format)
     
     file_name_authors_global = "data/authors.txt"
     file_name_works_global = "data/works.txt"
     
     author_objects_global = get_objects_from_file(file_name_authors_global,AO3.User)
     work_objects_global = get_objects_from_file(file_name_works_global,AO3.Work)
+
+    try:
+        remove_completed_works(file_name_works_global,work_objects_global)
+    except OSError:
+        pass
 
     works_list = get_all_updated_works(author_objects_global,work_objects_global,date)
 
