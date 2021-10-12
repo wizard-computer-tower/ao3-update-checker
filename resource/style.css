@@ -1,0 +1,11 @@
+body {
+    font: 100%/1.125 'Lucida Grande','Lucida Sans Unicode','GNU Unifont',Verdana,Helvetica,sans-serif;
+}
+a {
+    color: #900;
+    text-decoration: none;
+    border-bottom: 1px solid;
+}
+a:visited {
+    color: #666;
+}
